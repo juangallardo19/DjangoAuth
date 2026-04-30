@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Evaluaciones{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:      #F5F0E6;
+      --black:   #0D0D0D;
+      --accent:  #FF2D55;
+      --accent2: #FFB800;
+      --border:  2.5px solid #0D0D0D;
+      --white:   #FAFAFA;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'Space Mono', monospace;
+      color: var(--black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAVBAR ─────────────────────────────────── */
+    nav {
+      position: relative;
+      z-index: 2;
+      border-bottom: var(--border);
+      padding: 18px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+    }
+
+    .nav-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .nav-brand span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-user {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      opacity: 0.55;
+      padding: 6px 0;
+    }
+
+    .nav-badge {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: var(--border);
+      padding: 6px 16px;
+      font-weight: 700;
+      text-decoration: none;
+      color: var(--black);
+      transition: background .12s, color .12s;
+    }
+
+    .nav-badge:hover {
+      background: var(--black);
+      color: var(--bg);
+    }
+
+    .nav-badge.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .nav-badge--admin {
+      background: var(--black);
+      color: var(--bg);
+    }
+
+    .nav-badge--admin:hover {
+      background: var(--accent2);
+      color: var(--black);
+      border-color: var(--black);
+    }
+
+    /* ── MESSAGES ────────────────────────────────── */
+    .messages-wrap { margin-bottom: 24px; }
+
+    .notice {
+      border: var(--border);
+      padding: 12px 20px;
+      margin-bottom: 8px;
+      font-size: 0.72rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .notice-success  { background: var(--accent2); color: var(--black); }
+    .notice-error,
+    .notice-danger   { background: var(--accent);  color: #fff; }
+    .notice-warning  { background: var(--accent2); color: var(--black); }
+    .notice-info     { background: var(--black);   color: var(--bg); }
+
+    .field-error {
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-top: 6px;
+    }
+
+    /* ── MAIN ────────────────────────────────────── */
+    main {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      padding: 60px 48px;
+    }
+
+    /* ── PAGE HEADER ─────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: var(--border);
+    }
+
+    .page-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem;
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+
+    .page-header h1 span { color: var(--accent); }
+
+    .page-count {
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.45;
+    }
+
+    /* ── TABLA ───────────────────────────────────── */
+    .table-wrapper {
+      border: var(--border);
+      box-shadow: 6px 6px 0 var(--black);
+      background: var(--white);
+      overflow-x: auto;
+      animation: slideUp 0.4s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead { background: var(--black); color: var(--bg); }
+
+    thead th {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 16px 20px;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    tbody tr {
+      border-bottom: 2px solid #0D0D0D22;
+      transition: background .1s;
+    }
+
+    tbody tr:hover { background: #F5F0E6; }
+
+    tbody td { padding: 16px 20px; font-size: 0.82rem; }
+
+    .empty-row td {
+      text-align: center;
+      padding: 48px;
+      opacity: 0.4;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    tfoot tr { background: var(--bg); border-top: var(--border); }
+
+    tfoot td {
+      padding: 14px 20px;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+    }
+
+    /* ── CHIP ────────────────────────────────────── */
+    .chip {
+      border: var(--border);
+      padding: 4px 12px;
+      font-size: 0.65rem;
+      letter-spacing: 1px;
+      font-weight: 700;
+      display: inline-block;
+      text-transform: uppercase;
+    }
+
+    .chip-green { background: var(--accent2); color: var(--black); }
+    .chip-dark  { background: var(--black);   color: var(--bg); }
+
+    /* ── BOTONES ─────────────────────────────────── */
+    .btn {
+      border: var(--border);
+      padding: 10px 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-block;
+      cursor: pointer;
+      background: transparent;
+      transition: transform .12s, box-shadow .12s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .btn-primary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--black);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--black);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(13,13,13,0.06);
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .btn-warning {
+      background: var(--accent2);
+      color: var(--black);
+      box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .btn-warning:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 var(--black);
+      color: var(--black);
+      text-decoration: none;
+    }
+
+    .btn-danger {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .btn-danger:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 5px 5px 0 var(--black);
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .btn-sm { padding: 6px 12px; font-size: 0.62rem; }
+
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    /* ── FORMULARIO ──────────────────────────────── */
+    .form-box {
+      border: var(--border);
+      background: var(--white);
+      box-shadow: 8px 8px 0 var(--black);
+      padding: 56px 64px;
+      max-width: 640px;
+      margin: 0 auto;
+      animation: slideUp 0.4s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .form-box h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 2px;
+      margin-bottom: 40px;
+      border-bottom: var(--border);
+      padding-bottom: 20px;
+      line-height: 1;
+    }
+
+    .form-box h1 span { color: var(--accent); }
+
+    .form-subtitle {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-top: -32px;
+      margin-bottom: 32px;
+    }
+
+    .form-group { margin-bottom: 28px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 8px;
+      opacity: 0.6;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      border: var(--border);
+      background: var(--bg);
+      padding: 12px 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--black);
+      outline: none;
+      transition: box-shadow .12s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      box-shadow: 4px 4px 0 var(--accent);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    .form-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: var(--border);
+    }
+
+    /* ── DETAIL BOX ──────────────────────────────── */
+    .detail-box {
+      border: var(--border);
+      background: var(--white);
+      box-shadow: 8px 8px 0 var(--black);
+      max-width: 680px;
+      width: 100%;
+      animation: slideUp 0.4s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .detail-header {
+      background: var(--black);
+      color: var(--bg);
+      padding: 32px 40px;
+    }
+
+    .detail-header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .detail-header .subtitle {
+      font-size: 0.68rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      opacity: 0.5;
+      margin-bottom: 8px;
+    }
+
+    .detail-actions {
+      padding: 24px 40px;
+      border-top: var(--border);
+      display: flex;
+      gap: 12px;
+    }
+
+    /* ── STAT DISPLAY ────────────────────────────── */
+    .stat-display {
+      padding: 48px 40px;
+      text-align: center;
+      border-bottom: var(--border);
+    }
+
+    .stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 8rem;
+      letter-spacing: -2px;
+      line-height: 1;
+      color: var(--accent);
+    }
+
+    .stat-sublabel {
+      font-size: 0.65rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      opacity: 0.45;
+      margin-top: 12px;
+    }
+
+    /* ── CONFIRM DELETE ──────────────────────────── */
+    .confirm-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+    }
+
+    .confirm-box {
+      border: var(--border);
+      background: var(--white);
+      box-shadow: 8px 8px 0 var(--black);
+      padding: 64px 72px;
+      text-align: center;
+      max-width: 560px;
+      width: 100%;
+      animation: slideUp 0.4s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .stamp {
+      width: 100px;
+      height: 100px;
+      border: var(--border);
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 36px;
+      box-shadow: 4px 4px 0 var(--black);
+      animation: pop 0.5s 0.3s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .stamp-icon {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .confirm-box h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.2rem;
+      letter-spacing: 2px;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .confirm-box p {
+      font-size: 0.78rem;
+      letter-spacing: 1px;
+      line-height: 2;
+      opacity: 0.55;
+      margin-bottom: 44px;
+    }
+
+    /* ── ANIMACIONES ─────────────────────────────── */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pop {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-brand" href="{% url 'listar_calificaciones' %}">EVAL<span>.</span></a>
+    {% if user.is_authenticated %}
+    <div class="nav-links">
+      <span class="nav-user">
+        {{ user.get_full_name|default:user.username }}
+        {% if user.is_superuser %}&nbsp;·&nbsp;ADMIN{% endif %}
+        {% if user.is_staff and not user.is_superuser %}&nbsp;·&nbsp;STAFF{% endif %}
+      </span>
+      {% if user.is_superuser %}
+        <a href="{% url 'registrar_usuario' %}" class="nav-badge nav-badge--admin">+ Usuario</a>
+      {% endif %}
+      <a href="{% url 'promedio_general' %}" class="nav-badge">Promedio</a>
+      <a href="{% url 'logout' %}" class="nav-badge active">Salir</a>
+    </div>
+    {% endif %}
+  </nav>
+
+  <main>
+    {% if messages %}
+      <div class="messages-wrap">
+        {% for msg in messages %}
+          <div class="notice notice-{{ msg.tags }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+</body>
+</html>

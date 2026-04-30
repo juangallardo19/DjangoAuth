@@ -1,0 +1,30 @@
+{% extends 'calificaciones/base.html' %}
+{% block title %}Eliminar Calificación{% endblock %}
+
+{% block content %}
+<div class="confirm-center">
+  <div class="confirm-box">
+
+    <div class="stamp">
+      <span class="stamp-icon">!</span>
+    </div>
+
+    <h1>ELIMINAR<br>REGISTRO</h1>
+
+    <p>
+      ¿Deseas eliminar a<br>
+      <strong>{{ calificacion.nombre_estudiante }}</strong>?<br>
+      {{ calificacion.asignatura }} &mdash; Promedio {{ calificacion.promedio }}
+    </p>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="btn-row" style="justify-content:center; gap:16px;">
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <a href="{% url 'listar_calificaciones' %}" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

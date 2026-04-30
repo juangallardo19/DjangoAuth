@@ -1,0 +1,26 @@
+{% extends 'calificaciones/base.html' %}
+{% block title %}Promedio General{% endblock %}
+
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:center; min-height:70vh;">
+  <div class="detail-box">
+
+    <div class="detail-header">
+      <div class="subtitle">Estadística global</div>
+      <h1>PROMEDIO GENERAL</h1>
+    </div>
+
+    <div class="stat-display">
+      <div class="stat-number">
+        {% if promedio %}{{ promedio|floatformat:2 }}{% else %}&mdash;{% endif %}
+      </div>
+      <div class="stat-sublabel">Basado en {{ total }} registro(s)</div>
+    </div>
+
+    <div class="detail-actions">
+      <a href="{% url 'listar_calificaciones' %}" class="btn btn-secondary">&#8592; Volver</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'calificaciones/base.html' %}
+{% block title %}Editar Calificación{% endblock %}
+
+{% block content %}
+<div class="form-box">
+  <h1>EDITAR<br><span>NOTA</span></h1>
+  <p class="form-subtitle">{{ calificacion.nombre_estudiante }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="field-error">{{ field.errors }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-warning">Actualizar</button>
+      <a href="{% url 'listar_calificaciones' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

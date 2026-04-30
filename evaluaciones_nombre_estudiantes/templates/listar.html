@@ -1,0 +1,66 @@
+{% extends 'calificaciones/base.html' %}
+{% block title %}Calificaciones{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>CALIFI<span>CACIONES</span></h1>
+  <div style="display:flex; align-items:center; gap:20px;">
+    <span class="page-count">{{ calificaciones|length }} registro(s)</span>
+    <a href="{% url 'crear_calificacion' %}" class="btn btn-primary">+ Registrar</a>
+  </div>
+</div>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Estudiante</th>
+        <th>ID</th>
+        <th>Asignatura</th>
+        <th>Nota 1</th>
+        <th>Nota 2</th>
+        <th>Nota 3</th>
+        <th>Promedio</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in calificaciones %}
+      <tr>
+        <td>{{ c.nombre_estudiante }}</td>
+        <td>{{ c.identificacion }}</td>
+        <td>{{ c.asignatura }}</td>
+        <td>{{ c.nota1 }}</td>
+        <td>{{ c.nota2 }}</td>
+        <td>{{ c.nota3 }}</td>
+        <td><span class="chip chip-green">{{ c.promedio }}</span></td>
+        <td>
+          <div class="btn-row">
+            <a href="{% url 'editar_calificacion' c.pk %}" class="btn btn-warning btn-sm">Editar</a>
+            {% if es_admin %}
+            <a href="{% url 'eliminar_calificacion' c.pk %}" class="btn btn-danger btn-sm">Eliminar</a>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr class="empty-row">
+        <td colspan="8">No hay registros aún.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="6" style="text-align:right; font-size:0.65rem; letter-spacing:3px; text-transform:uppercase; opacity:0.5;">
+          Promedio general
+        </td>
+        <td colspan="2">
+          <span class="chip chip-dark">
+            {% if promedio_general %}{{ promedio_general|floatformat:2 }}{% else %}—{% endif %}
+          </span>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% endblock %}
