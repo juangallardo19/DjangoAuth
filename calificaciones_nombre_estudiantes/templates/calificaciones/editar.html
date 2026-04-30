@@ -1,0 +1,55 @@
+{% extends 'calificaciones/base.html' %}
+{% block title %}Editar Calificación{% endblock %}
+
+{% block content %}
+<div class="form-box" style="max-width:860px;">
+  <h1>EDITAR<br><span>NOTA</span></h1>
+  <p class="form-subtitle">{{ calificacion.nombre_estudiante }}</p>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label>{{ form.nombre_estudiante.label }}</label>
+      {{ form.nombre_estudiante }}
+      {% if form.nombre_estudiante.errors %}<div class="field-error">{{ form.nombre_estudiante.errors }}</div>{% endif %}
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>{{ form.identificacion.label }}</label>
+        {{ form.identificacion }}
+        {% if form.identificacion.errors %}<div class="field-error">{{ form.identificacion.errors }}</div>{% endif %}
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>{{ form.asignatura.label }}</label>
+        {{ form.asignatura }}
+        {% if form.asignatura.errors %}<div class="field-error">{{ form.asignatura.errors }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px; margin-top:28px;">
+      <div class="form-group" style="margin-bottom:0;">
+        <label>{{ form.nota1.label }}</label>
+        {{ form.nota1 }}
+        {% if form.nota1.errors %}<div class="field-error">{{ form.nota1.errors }}</div>{% endif %}
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>{{ form.nota2.label }}</label>
+        {{ form.nota2 }}
+        {% if form.nota2.errors %}<div class="field-error">{{ form.nota2.errors }}</div>{% endif %}
+      </div>
+      <div class="form-group" style="margin-bottom:0;">
+        <label>{{ form.nota3.label }}</label>
+        {{ form.nota3 }}
+        {% if form.nota3.errors %}<div class="field-error">{{ form.nota3.errors }}</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-warning">Actualizar</button>
+      <a href="{% url 'listar_calificaciones' %}" class="btn btn-secondary">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
