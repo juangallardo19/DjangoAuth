@@ -1,0 +1,18 @@
+{% extends 'calificaciones/base.html' %}
+{% block title %}Promedio General{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-md-4 text-center">
+    <div class="card shadow">
+      <div class="card-header bg-info text-white"><h4>Promedio General</h4></div>
+      <div class="card-body">
+        <h1 class="display-3 text-primary fw-bold">
+          {% if promedio %}{{ promedio|floatformat:2 }}{% else %}—{% endif %}
+        </h1>
+        <p class="text-muted">Basado en {{ total }} registro(s)</p>
+        <a href="{% url 'listar_calificaciones' %}" class="btn btn-secondary">Volver</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
