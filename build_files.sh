@@ -1,2 +1,3 @@
 #!/bin/bash
-python3.12 manage.py collectstatic --noinput
+export DJANGO_SETTINGS_MODULE=evaluaciones_nombre_estudiantes.settings
+python manage.py collectstatic --noinput
