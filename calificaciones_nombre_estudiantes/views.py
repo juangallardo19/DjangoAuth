@@ -35,14 +35,15 @@ def vista_logout(request):
     return redirect('login')
 
 
-@login_required
-@user_passes_test(es_admin)
 def registrar_usuario(request):
+    if request.user.is_authenticated and not es_admin(request.user):
+        return redirect('listar_calificaciones')
+
     form = RegistroUsuarioForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
         usuario = form.save()
-        messages.success(request, f'Usuario {usuario.username} creado.')
-        return redirect('listar_calificaciones')
+        messages.success(request, f'Usuario {usuario.username} creado. Ahora puedes iniciar sesión.')
+        return redirect('login')
     return render(request, 'calificaciones/registro_usuario.html', {'form': form})
 
 @login_required
