@@ -32,11 +32,12 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.auth',           
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    'django.contrib.sessions',       
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'calificaciones_nombre_estudiantes',  
 ]
 
 MIDDLEWARE = [
@@ -115,3 +116,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/calificaciones/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+LANGUAGE_CODE = 'es-co'
+TIME_ZONE = 'America/Bogota'
